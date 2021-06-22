@@ -39,21 +39,21 @@ wolfssl build option: --enable-kyber
 ### Digital signature algorithms: 
 
 * **[CRYSTALS-Dilithium](https://pq-crystals.org/dilithium/index.shtml)**: 
-Dilithium2 (2), Dilithium3 (3);
+Dilithium2, Dilithium3;
 wolfssl build option: --enable-dilithium
 
 * **[Falcon](https://falcon-sign.info/)**:
 Falcon-512, Falcon-1024;
-wolfssl build option: enable-falcon
+wolfssl build option: --enable-falcon
 
 * **[SPHINCS+](https://sphincs.org/)**: 
 SPHINCS+-SHA-256-128s-simple, SPHINCS+-SHA-256-128f-simple, 
 SPHINCS+-SHA-256-192s-simple, SPHINCS+-SHA-256-192f-simple; 
-wolfssl build option: enable-sphincs
+wolfssl build option: --enable-sphincs
 
 * **[XMSS](https://datatracker.ietf.org/doc/rfc8391/)**:
 XMSS-SHA2_10_256, XMSS-SHA2_10_512;
-wolfssl build option: enable-xmss
+wolfssl build option: --enable-xmss
 
 ## Limitations and Notes on Security
 This prototypical work integrates  reference implementations of selected PQC schemes from NIST's PQC standardization project into wolfSSL. While there are currently no vulnerabilities know in those implementations, it is strongly recommended to be very cautious when deploying post-quantum cryptography as these schemes and their implementations have not seen the same amount of security analysis as currently deployed public key cryptography has. For up-to-date information on these schemes, please pay close attention to any PQC-related announcements by [NIST](https://csrc.nist.gov/Projects/post-quantum-cryptography/news).
