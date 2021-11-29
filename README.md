@@ -1,7 +1,8 @@
 pq-wolfSSL
 ====
 
-Modified version of the embedded TLS library [wolfSSL](https://github.com/wolfSSL/wolfssl) (v. 4.7.0) that contains Round 3 reference implementations of NIST's Post-Quantum Cryptography standardization process.
+This is the accompanying code for the paper *"Mixed Certificate Chains for the Transition to Post-Quantum Authentication in TLS 1.3"* to appear at 17th ACM Asia Conference on Computer and Communications
+Security (ACM ASIA CCS ’22); also available in Cryptology ePrint Archive: Report [2021/1447](https://eprint.iacr.org/2021/1447). 
 
 - - - -
 
@@ -15,6 +16,7 @@ Modified version of the embedded TLS library [wolfSSL](https://github.com/wolfSS
 
 
 # Overview
+Modified version of the embedded TLS library [wolfSSL](https://github.com/wolfSSL/wolfssl) (v. 4.7.0) that contains Round 3 reference implementations of NIST's Post-Quantum Cryptography standardization process.
 
 Our integrations of post-quantum cryptography into wolfSSL provides:
 - Post-quantum cryptography for TLS 1.3 handshake (post-quantum key exchange and post-quantum authentication)
