@@ -111,16 +111,27 @@ void cbd_eta2(poly *r, const uint8_t *buf)
 **************************************************/
 void poly_compress(uint8_t *r, poly *a)
 {
-    uint8_t t[8];
     unsigned int i, j;
+    int16_t u;
+    uint32_t d0;
+    uint8_t t[8];
 
     poly_csubq(a);
 
     #if (KYBER_POLYCOMPRESSEDBYTES == 128)
         for(i=0; i < KYBER_N/8; i++) {
             for(j=0; j < 8; j++) {
-                t[j] = ((((uint16_t)a->coeffs[8*i+j] << 4) + KYBER_Q/2)/KYBER_Q) & 15;
+                // map to positive standard representatives
+                u  = a->coeffs[8*i+j];
+                u += (u >> 15) & KYBER_Q;
+                //t[j] = ((((uint16_t)a->coeffs[8*i+j] << 4) + KYBER_Q/2)/KYBER_Q) & 15;
+                d0 = u << 4;
+                d0 += 1665;
+                d0 *= 80635;
+                d0 >>= 28;
+                t[j] = d0 & 0xf;
             }
+
             r[0] = t[0] | (t[1] << 4);
             r[1] = t[2] | (t[3] << 4);
             r[2] = t[4] | (t[5] << 4);
@@ -129,16 +140,25 @@ void poly_compress(uint8_t *r, poly *a)
         }
     #elif (KYBER_POLYCOMPRESSEDBYTES == 160)
       for(i=0; i < KYBER_N/8; i++) {
-          for(j=0; j < 8; j++) {
-              t[j] = ((((uint32_t)a->coeffs[8*i+j] << 5) + KYBER_Q/2)/KYBER_Q) & 31;
-          }
-          r[0] = (t[0] >> 0) | (t[1] << 5);
-          r[1] = (t[1] >> 3) | (t[2] << 2) | (t[3] << 7);
-          r[2] = (t[3] >> 1) | (t[4] << 4);
-          r[3] = (t[4] >> 4) | (t[5] << 1) | (t[6] << 6);
-          r[4] = (t[6] >> 2) | (t[7] << 3);
-          r += 5;
-      }
+            for(j=0; j < 8; j++) {
+                // map to positive standard representatives
+                u  = a->coeffs[8*i+j];
+                u += (u >> 15) & KYBER_Q;
+                //t[j] = ((((uint32_t)a->coeffs[8*i+j] << 5) + KYBER_Q/2)/KYBER_Q) & 31;
+                d0 = u << 5;
+                d0 += 1664;
+                d0 *= 40318;
+                d0 >>= 27;
+                t[j] = d0 & 0x1f;
+            }
+
+            r[0] = (t[0] >> 0) | (t[1] << 5);
+            r[1] = (t[1] >> 3) | (t[2] << 2) | (t[3] << 7);
+            r[2] = (t[3] >> 1) | (t[4] << 4);
+            r[3] = (t[4] >> 4) | (t[5] << 1) | (t[6] << 6);
+            r[4] = (t[6] >> 2) | (t[7] << 3);
+            r += 5;
+        }
     #else
     #error "KYBER_POLYCOMPRESSEDBYTES needs to be in {128, 160}"
     #endif
@@ -467,6 +487,7 @@ void poly_tomsg(uint8_t msg[KYBER_SYMBYTES], poly *a)
 void polyvec_compress(uint8_t *r, polyvec *a)
 {
     unsigned int i,j,k;
+    uint64_t d0;
 
     polyvec_csubq(a);
 
@@ -475,8 +496,17 @@ void polyvec_compress(uint8_t *r, polyvec *a)
       for(i=0; i < KYBER_K; i++) {
           for(j=0; j < KYBER_N/8; j++) {
               for(k=0; k < 8; k++) {
-                  t[k] = ((((uint32_t)a->vec[i].coeffs[8*j+k] << 11) + KYBER_Q/2) / KYBER_Q) & 0x7ff;
+                t[k]  = a->vec[i].coeffs[8*j+k];
+                t[k] += ((int16_t)t[k] >> 15) & KYBER_Q;
+                //t[k] = ((((uint32_t)a->vec[i].coeffs[8*j+k] << 11) + KYBER_Q/2) / KYBER_Q) & 0x7ff;
+                d0 = t[k];
+                d0 <<= 11;
+                d0 += 1664;
+                d0 *= 645084;
+                d0 >>= 31;
+                t[k] = d0 & 0x7ff;
               }
+
               r[ 0] = (t[0] >>  0);
               r[ 1] = (t[0] >>  8) | (t[1] << 3);
               r[ 2] = (t[1] >>  5) | (t[2] << 6);
@@ -496,8 +526,17 @@ void polyvec_compress(uint8_t *r, polyvec *a)
       for(i=0; i < KYBER_K; i++) {
           for(j=0; j < KYBER_N/4; j++) {
               for(k=0; k < 4; k++) {
-                  t[k] = ((((uint32_t)a->vec[i].coeffs[4*j+k] << 10) + KYBER_Q/2) / KYBER_Q) & 0x3ff;
+                t[k]  = a->vec[i].coeffs[4*j+k];
+                t[k] += ((int16_t)t[k] >> 15) & KYBER_Q;
+                //t[k] = ((((uint32_t)a->vec[i].coeffs[4*j+k] << 10) + KYBER_Q/2) / KYBER_Q) & 0x3ff;
+                d0 = t[k];
+                d0 <<= 10;
+                d0 += 1665;
+                d0 *= 1290167;
+                d0 >>= 32;
+                t[k] = d0 & 0x3ff;
               }
+
               r[0] = (t[0] >> 0);
               r[1] = (t[0] >> 8) | (t[1] << 2);
               r[2] = (t[1] >> 6) | (t[2] << 4);
