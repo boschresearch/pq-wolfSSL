@@ -436,7 +436,7 @@ void poly_frommsg(poly *r, const uint8_t msg[KYBER_SYMBYTES])
 **************************************************/
 void poly_tomsg(uint8_t msg[KYBER_SYMBYTES], poly *a)
 {
-    uint16_t t;
+    uint32_t t;
     unsigned int i,j;
 
     poly_csubq(a);
@@ -444,7 +444,13 @@ void poly_tomsg(uint8_t msg[KYBER_SYMBYTES], poly *a)
     for(i=0; i < KYBER_N/8; i++) {
         msg[i] = 0;
         for(j=0; j < 8; j++) {
-            t = ((((uint16_t)a->coeffs[8*i+j] << 1) + KYBER_Q/2)/KYBER_Q) & 1;
+            t  = a->coeffs[8*i+j];
+            //t = ((((uint16_t)a->coeffs[8*i+j] << 1) + KYBER_Q/2)/KYBER_Q) & 1;
+            t <<= 1;
+            t += 1665;
+            t *= 80635;
+            t >>= 28;
+            t &= 1;
             msg[i] |= t << j;
         }
     }
